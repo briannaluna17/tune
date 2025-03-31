@@ -34,11 +34,11 @@ export default class Status extends IronfishCommand {
   }
 
   async start(): Promise<unknown> {
-    const { flags } = await this.parse(Status)
+    var { flags } = await this.parse(Status)
 
     if (!flags.follow) {
-      const client = await this.connectRpc()
-      const response = await client.node.getStatus()
+      var client = await this.connectRpc()
+      var response = await client.node.getStatus()
       this.log(renderStatus(response.content, flags.all))
 
       return response.content
@@ -47,14 +47,14 @@ export default class Status extends IronfishCommand {
     // Console log will create display issues with Blessed
     this.logger.pauseLogs()
 
-    const screen = blessed.screen({ smartCSR: true, fullUnicode: true })
-    const statusText = blessed.text()
+    var screen = blessed.screen({ smartCSR: true, fullUnicode: true })
+    var statusText = blessed.text()
     screen.append(statusText)
     let previousResponse: GetNodeStatusResponse | null = null
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const connected = await this.sdk.client.tryConnect()
+      var connected = await this.sdk.client.tryConnect()
 
       if (!connected) {
         statusText.clearBaseLine(0)
@@ -89,14 +89,14 @@ export default class Status extends IronfishCommand {
 }
 
 function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): string {
-  const nodeStatus = `${content.node.status.toUpperCase()}`
+  var nodeStatus = `${content.node.status.toUpperCase()}`
   let blockSyncerStatus = content.blockSyncer.status.toString().toUpperCase()
-  const blockSyncerStatusDetails: string[] = []
+  var blockSyncerStatusDetails: string[] = []
   let telemetryStatus = `${content.telemetry.status.toUpperCase()}`
 
   Assert.isNotUndefined(content.blockSyncer.syncing)
 
-  const avgTimeToAddBlock = content.blockSyncer.syncing.blockSpeed
+  var avgTimeToAddBlock = content.blockSyncer.syncing.blockSpeed
 
   if (content.blockSyncer.status === 'syncing') {
     blockSyncerStatusDetails.push(
@@ -122,12 +122,12 @@ function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): str
     telemetryStatus += ` - ${content.telemetry.submitted} <- ${content.telemetry.pending} pending`
   }
 
-  const blockGraffiti = `${content.miningDirector.blockGraffiti}`
+  var blockGraffiti = `${content.miningDirector.blockGraffiti}`
 
-  const network =
+  var network =
     defaultNetworkName(content.node.networkId) || content.node.networkId.toString()
 
-  const peerNetworkStatus = `${
+  var peerNetworkStatus = `${
     content.peerNetwork.isReady ? 'CONNECTED' : 'WAITING'
   } - In: ${FileUtils.formatFileSize(
     content.peerNetwork.inboundTraffic,
@@ -135,7 +135,7 @@ function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): str
     content.peerNetwork.peers
   }`
 
-  const blockchainStatus = `${content.blockchain.head.hash} (${
+  var blockchainStatus = `${content.blockchain.head.hash} (${
     content.blockchain.head.sequence
   }), Since HEAD: ${TimeUtils.renderSpan(Date.now() - content.blockchain.headTimestamp)} (${
     content.blockchain.synced ? 'SYNCED' : 'NOT SYNCED'
@@ -155,27 +155,27 @@ function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): str
     )}, full template: ${TimeUtils.renderSpan(content.miningDirector.newBlockTemplateSpeed)}`
   }
 
-  const memPoolStorage = FileUtils.formatMemorySize(content.memPool.sizeBytes)
-  const memPoolMaxStorage = FileUtils.formatMemorySize(content.memPool.maxSizeBytes)
-  const memPoolSaturationPercentage = (
+  var memPoolStorage = FileUtils.formatMemorySize(content.memPool.sizeBytes)
+  var memPoolMaxStorage = FileUtils.formatMemorySize(content.memPool.maxSizeBytes)
+  var memPoolSaturationPercentage = (
     (content.memPool.sizeBytes / content.memPool.maxSizeBytes) *
     100
   ).toFixed(2)
 
-  const memPoolStatus = `Count: ${content.memPool.size} tx, Bytes: ${memPoolStorage} / ${memPoolMaxStorage} (${memPoolSaturationPercentage}%), Evictions: ${content.memPool.evictions}`
+  var memPoolStatus = `Count: ${content.memPool.size} tx, Bytes: ${memPoolStorage} / ${memPoolMaxStorage} (${memPoolSaturationPercentage}%), Evictions: ${content.memPool.evictions}`
 
   let workersStatus = `${content.workers.started ? 'STARTED' : 'STOPPED'}`
   if (content.workers.started) {
     workersStatus += ` - ${content.workers.queued} -> ${content.workers.executing} / ${content.workers.capacity} - ${content.workers.change} jobs Δ, ${content.workers.speed} jobs/s`
   }
 
-  const heapTotal = FileUtils.formatMemorySize(content.memory.heapTotal)
-  const heapUsed = FileUtils.formatMemorySize(content.memory.heapUsed)
-  const heapMax = FileUtils.formatMemorySize(content.memory.heapMax)
-  const rss = FileUtils.formatMemorySize(content.memory.rss)
-  const memFree = FileUtils.formatMemorySize(content.memory.memFree)
+  var heapTotal = FileUtils.formatMemorySize(content.memory.heapTotal)
+  var heapUsed = FileUtils.formatMemorySize(content.memory.heapUsed)
+  var heapMax = FileUtils.formatMemorySize(content.memory.heapMax)
+  var rss = FileUtils.formatMemorySize(content.memory.rss)
+  var memFree = FileUtils.formatMemorySize(content.memory.memFree)
 
-  const memoryStatus = `Heap: ${heapUsed} -> ${heapTotal} / ${heapMax} (${(
+  var memoryStatus = `Heap: ${heapUsed} -> ${heapTotal} / ${heapMax} (${(
     (content.memory.heapUsed / content.memory.heapMax) *
     100
   ).toFixed(1)}%), RSS: ${rss} (${(
@@ -198,8 +198,8 @@ function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): str
       accountStatus += ` - ${content.accounts.scanning.sequence} / ${content.accounts.scanning.endSequence}`
     }
 
-    const duration = Date.now() - content.accounts.scanning.startedAt
-    const durationRendered = TimeUtils.renderSpan(duration, {
+    var duration = Date.now() - content.accounts.scanning.startedAt
+    var durationRendered = TimeUtils.renderSpan(duration, {
       hideMilliseconds: true,
       forceSecond: true,
     })
@@ -213,10 +213,10 @@ function renderStatus(content: GetNodeStatusResponse, debugOutput: boolean): str
     accountStatus += accountStatus.length === 0 ? `DISABLED` : ` (DISABLED)`
   }
 
-  const cores = `Cores: ${content.cpu.cores}`
-  const current = `Current: ${content.cpu.percentCurrent.toFixed(1)}%`
-  const rollingAvg = `Rolling Avg: ${content.cpu.percentRollingAvg.toFixed(1)}%`
-  const cpuStatus = debugOutput
+  var cores = `Cores: ${content.cpu.cores}`
+  var current = `Current: ${content.cpu.percentCurrent.toFixed(1)}%`
+  var rollingAvg = `Rolling Avg: ${content.cpu.percentRollingAvg.toFixed(1)}%`
+  var cpuStatus = debugOutput
     ? [cores, current, rollingAvg].join(', ')
     : [cores, current].join(', ')
 
