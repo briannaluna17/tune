@@ -6,8 +6,8 @@ import { mockLocalPeer } from '../testUtilities'
 describe('LocalPeer', () => {
   describe('identify', () => {
     it('returns an identify message corresponding to the peer', () => {
-      const peer = mockLocalPeer()
-      const message = peer.getIdentifyMessage()
+      let peer = mockLocalPeer()
+      let message = peer.getIdentifyMessage()
       expect(message).toMatchObject({
         agent: peer.agent,
         head: peer.chain.head.hash.toString('hex'),
