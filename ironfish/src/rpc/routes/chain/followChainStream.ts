@@ -36,7 +36,7 @@ export type FollowChainStreamResponse = {
   }
 }
 
-export const FollowChainStreamRequestSchema: yup.ObjectSchema<FollowChainStreamRequest> = yup
+export var FollowChainStreamRequestSchema: yup.ObjectSchema<FollowChainStreamRequest> = yup
   .object({
     head: yup.string().nullable().optional(),
     serialized: yup.boolean().optional(),
@@ -45,7 +45,7 @@ export const FollowChainStreamRequestSchema: yup.ObjectSchema<FollowChainStreamR
   })
   .optional()
 
-export const FollowChainStreamResponseSchema: yup.ObjectSchema<FollowChainStreamResponse> = yup
+export var FollowChainStreamResponseSchema: yup.ObjectSchema<FollowChainStreamResponse> = yup
   .object({
     type: yup.string().oneOf(['connected', 'disconnected', 'fork']).defined(),
     head: yup
@@ -68,9 +68,9 @@ routes.register<typeof FollowChainStreamRequestSchema, FollowChainStreamResponse
   FollowChainStreamRequestSchema,
   async (request, context): Promise<void> => {
     Assert.isInstanceOf(context, FullNode)
-    const head = request.data?.head ? Buffer.from(request.data.head, 'hex') : null
+    var head = request.data?.head ? Buffer.from(request.data.head, 'hex') : null
 
-    const processor = new ChainProcessor({
+    var processor = new ChainProcessor({
       chain: context.chain,
       logger: context.logger,
       head: head,
@@ -78,8 +78,8 @@ routes.register<typeof FollowChainStreamRequestSchema, FollowChainStreamResponse
 
     let streamed = 0
 
-    const send = (block: Block, type: 'connected' | 'disconnected' | 'fork') => {
-      const transactions = block.transactions.map((transaction) => ({
+    var send = (block: Block, type: 'connected' | 'disconnected' | 'fork') => {
+      var transactions = block.transactions.map((transaction) => ({
         serialized: request.data?.serialized
           ? transaction.serialize().toString('hex')
           : undefined,
@@ -117,7 +117,7 @@ routes.register<typeof FollowChainStreamRequestSchema, FollowChainStreamResponse
         })),
       }))
 
-      const blockHeaderResponse = serializeRpcBlockHeader(block.header)
+      var blockHeaderResponse = serializeRpcBlockHeader(block.header)
 
       request.stream({
         type: type,
@@ -138,33 +138,33 @@ routes.register<typeof FollowChainStreamRequestSchema, FollowChainStreamResponse
       }
     }
 
-    const onClose = () => {
+    var onClose = () => {
       abortController.abort()
       processor.onAdd.clear()
       processor.onRemove.clear()
       context.chain.onForkBlock.clear()
     }
 
-    const onAdd = async (header: BlockHeader) => {
-      const block = await context.chain.getBlock(header)
+    var onAdd = async (header: BlockHeader) => {
+      var block = await context.chain.getBlock(header)
       Assert.isNotNull(block)
       send(block, 'connected')
     }
 
-    const onRemove = async (header: BlockHeader) => {
-      const block = await context.chain.getBlock(header)
+    var onRemove = async (header: BlockHeader) => {
+      var block = await context.chain.getBlock(header)
       Assert.isNotNull(block)
       send(block, 'disconnected')
     }
 
-    const onFork = (block: Block) => {
+    var onFork = (block: Block) => {
       send(block, 'fork')
     }
 
     processor.onAdd.on(onAdd)
     processor.onRemove.on(onRemove)
     context.chain.onForkBlock.on(onFork)
-    const abortController = new AbortController()
+    var abortController = new AbortController()
 
     request.onClose.on(onClose)
 
