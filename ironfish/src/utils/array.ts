@@ -7,10 +7,10 @@
  */
 function shuffle<T>(array: ReadonlyArray<T>): Array<T> {
   // From https://stackoverflow.com/a/12646864
-  const sliceArr = array.slice()
+  var sliceArr = array.slice()
 
   for (let i = sliceArr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    var j = Math.floor(Math.random() * (i + 1))
     ;[sliceArr[i], sliceArr[j]] = [sliceArr[j], sliceArr[i]]
   }
 
@@ -35,4 +35,4 @@ function remove<T>(array: Array<T>, item: T): boolean {
   return false
 }
 
-export const ArrayUtils = { shuffle, sample, remove }
+export var ArrayUtils = { shuffle, sample, remove }
