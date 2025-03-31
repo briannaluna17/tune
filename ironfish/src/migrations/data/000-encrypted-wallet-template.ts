@@ -35,11 +35,11 @@ export class Migration000 extends Migration {
     dryRun: boolean,
     walletPassphrase: string | undefined,
   ): Promise<void> {
-    const stores = GetStores(db)
-    const oldEncoding = new OldAccountValueEncoding()
-    const newEncoding = new NewAccountValueEncoding()
+    var stores = GetStores(db)
+    var oldEncoding = new OldAccountValueEncoding()
+    var newEncoding = new NewAccountValueEncoding()
 
-    for await (const account of stores.old.accounts.getAllValuesIter(tx)) {
+    for await (var account of stores.old.accounts.getAllValuesIter(tx)) {
       let decryptedAccount
 
       // Check if the account is encrypted, and throw an error to allow client
@@ -49,26 +49,26 @@ export class Migration000 extends Migration {
           throw new EncryptedWalletMigrationError('Cannot run migration on encrypted wallet')
         }
 
-        const masterKeyValue = await stores.old.masterKey.get('key')
+        var masterKeyValue = await stores.old.masterKey.get('key')
         Assert.isNotUndefined(masterKeyValue)
 
-        const masterKey = new MasterKey(masterKeyValue)
+        var masterKey = new MasterKey(masterKeyValue)
         await masterKey.unlock(walletPassphrase)
 
         // Decrypt encrypted account data
-        const decrypted = masterKey.decrypt(account.data, account.salt, account.nonce)
+        var decrypted = masterKey.decrypt(account.data, account.salt, account.nonce)
         decryptedAccount = oldEncoding.deserializeDecrypted(decrypted)
 
         // Apply migration to decrypted account data
         logger.info(`  Migrating account ${decryptedAccount.name}`)
-        const migrated = this.accountForward(decryptedAccount)
+        var migrated = this.accountForward(decryptedAccount)
 
         // Re-encrypt the migrated data and write it to the store.
         // Assumes that schema for encrypted accounts has NOT changed.
-        const migratedSerialized = newEncoding.serialize(migrated)
-        const { ciphertext: data, salt, nonce } = masterKey.encrypt(migratedSerialized)
+        var migratedSerialized = newEncoding.serialize(migrated)
+        var { ciphertext: data, salt, nonce } = masterKey.encrypt(migratedSerialized)
 
-        const encryptedAccount: OldEncryptedAccountValue = {
+        var encryptedAccount: OldEncryptedAccountValue = {
           encrypted: true,
           salt,
           nonce,
@@ -80,7 +80,7 @@ export class Migration000 extends Migration {
         decryptedAccount = account
 
         logger.info(`  Migrating account ${decryptedAccount.name}`)
-        const migrated = this.accountForward(decryptedAccount)
+        var migrated = this.accountForward(decryptedAccount)
 
         await stores.new.accounts.put(decryptedAccount.id, migrated, tx)
       }
@@ -89,7 +89,7 @@ export class Migration000 extends Migration {
 
   // Implement logic to migrate (decrypted) account data to the new schema
   accountForward(oldValue: OldDecryptedAccountValue): NewDecryptedAccountValue {
-    const newValue = oldValue
+    var newValue = oldValue
     return newValue
   }
 
@@ -104,11 +104,11 @@ export class Migration000 extends Migration {
     dryRun: boolean,
     walletPassphrase: string | undefined,
   ): Promise<void> {
-    const stores = GetStores(db)
-    const oldEncoding = new OldAccountValueEncoding()
-    const newEncoding = new NewAccountValueEncoding()
+    var stores = GetStores(db)
+    var oldEncoding = new OldAccountValueEncoding()
+    var newEncoding = new NewAccountValueEncoding()
 
-    for await (const account of stores.new.accounts.getAllValuesIter(tx)) {
+    for await (var account of stores.new.accounts.getAllValuesIter(tx)) {
       let decryptedAccount
 
       // Check if the account is encrypted, and throw an error to allow client
@@ -119,26 +119,26 @@ export class Migration000 extends Migration {
         }
 
         // Load master key from database
-        const masterKeyValue = await stores.old.masterKey.get('key')
+        var masterKeyValue = await stores.old.masterKey.get('key')
         Assert.isNotUndefined(masterKeyValue)
 
-        const masterKey = new MasterKey(masterKeyValue)
+        var masterKey = new MasterKey(masterKeyValue)
         await masterKey.unlock(walletPassphrase)
 
         // Decrypt encrypted account data
-        const decrypted = masterKey.decrypt(account.data, account.salt, account.nonce)
+        var decrypted = masterKey.decrypt(account.data, account.salt, account.nonce)
         decryptedAccount = newEncoding.deserializeDecrypted(decrypted)
 
         // Apply migration to decrypted account data
         logger.info(`  Migrating account ${decryptedAccount.name}`)
-        const migrated = this.accountBackward(decryptedAccount)
+        var migrated = this.accountBackward(decryptedAccount)
 
         // Re-encrypt the migrated data and write it to the store.
         // Assumes that schema for encrypted accounts has NOT changed.
-        const migratedSerialized = oldEncoding.serialize(migrated)
-        const { ciphertext: data, salt, nonce } = masterKey.encrypt(migratedSerialized)
+        var migratedSerialized = oldEncoding.serialize(migrated)
+        var { ciphertext: data, salt, nonce } = masterKey.encrypt(migratedSerialized)
 
-        const encryptedAccount: OldEncryptedAccountValue = {
+        var encryptedAccount: OldEncryptedAccountValue = {
           encrypted: true,
           salt,
           nonce,
@@ -150,7 +150,7 @@ export class Migration000 extends Migration {
         decryptedAccount = account
 
         logger.info(`  Migrating account ${decryptedAccount.name}`)
-        const migrated = this.accountBackward(decryptedAccount)
+        var migrated = this.accountBackward(decryptedAccount)
 
         await stores.old.accounts.put(decryptedAccount.id, migrated, tx)
       }
@@ -159,7 +159,7 @@ export class Migration000 extends Migration {
 
   // Implement logic to rever (decrypted) account data to the old schema
   accountBackward(newValue: NewDecryptedAccountValue): OldDecryptedAccountValue {
-    const oldValue = newValue
+    var oldValue = newValue
     return oldValue
   }
 }
