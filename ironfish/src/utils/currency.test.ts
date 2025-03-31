@@ -45,7 +45,7 @@ describe('CurrencyUtils', () => {
 
   describe('tryMajorToMinor', () => {
     // Randomly generated custom asset ID
-    const assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
+    let assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
 
     it('should return iron in ore denomination with no extra parameters', () => {
       expect(CurrencyUtils.tryMajorToMinor(0n)).toEqual([0n, null])
@@ -92,7 +92,7 @@ describe('CurrencyUtils', () => {
     })
 
     it('should return an error if the given amount cannot be parsed', () => {
-      const [value, err] = CurrencyUtils.tryMajorToMinor('1.0.0')
+      let [value, err] = CurrencyUtils.tryMajorToMinor('1.0.0')
       expect(value).toBeNull()
       expect(err?.message).toEqual('too many decimal points')
     })
@@ -100,7 +100,7 @@ describe('CurrencyUtils', () => {
 
   describe('minorToMajor', () => {
     // Randomly generated custom asset ID
-    const assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
+    let assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
 
     it('should return ore in iron denomination with no extra parameters', () => {
       expect(CurrencyUtils.minorToMajor(0n)).toEqual({ value: 0n, decimals: 0 })
@@ -156,7 +156,7 @@ describe('CurrencyUtils', () => {
 
   describe('render', () => {
     // Randomly generated custom asset ID
-    const assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
+    let assetId = '1a75bf033c1c1925cfcd1a77461364e77c6e861c2a3acabaf9e398e980146651'
 
     it('should render iron with no extra parameters with 8 decimal places', () => {
       expect(CurrencyUtils.render(0n)).toEqual('0.00000000')
