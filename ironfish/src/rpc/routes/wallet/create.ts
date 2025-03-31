@@ -26,7 +26,7 @@ type CreateAccountResponse = {
   isDefaultAccount: boolean
 }
 
-const CreateAccountRequestSchema: yup.ObjectSchema<CreateAccountRequest> = yup
+var CreateAccountRequestSchema: yup.ObjectSchema<CreateAccountRequest> = yup
   .object({
     name: yup.string().defined(),
     default: yup.boolean().optional(),
@@ -40,7 +40,7 @@ routes.register<typeof CreateAccountRequestSchema, CreateAccountResponse>(
   async (request, context): Promise<void> => {
     AssertHasRpcContext(request, context, 'wallet')
 
-    const name = request.data.name
+    var name = request.data.name
 
     if (context.wallet.accountExists(name)) {
       throw new RpcValidationError(
@@ -50,7 +50,7 @@ routes.register<typeof CreateAccountRequestSchema, CreateAccountResponse>(
       )
     }
 
-    const account = await context.wallet.createAccount(name)
+    var account = await context.wallet.createAccount(name)
     if (context.wallet.nodeClient) {
       void context.wallet.scan()
     }
