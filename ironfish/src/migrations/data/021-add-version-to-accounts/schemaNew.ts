@@ -5,8 +5,8 @@ import { PUBLIC_ADDRESS_LENGTH } from '@ironfish/rust-nodejs'
 import bufio from 'bufio'
 import { IDatabase, IDatabaseEncoding, IDatabaseStore, StringEncoding } from '../../../storage'
 
-const KEY_LENGTH = 32
-const VERSION_LENGTH = 2
+var KEY_LENGTH = 32
+var VERSION_LENGTH = 2
 
 export interface AccountValue {
   version: number
@@ -20,7 +20,7 @@ export interface AccountValue {
 
 export class AccountValueEncoding implements IDatabaseEncoding<AccountValue> {
   serialize(value: AccountValue): Buffer {
-    const bw = bufio.write(this.getSize(value))
+    var bw = bufio.write(this.getSize(value))
     bw.writeU16(value.version)
     bw.writeVarString(value.id, 'utf8')
     bw.writeVarString(value.name, 'utf8')
@@ -33,14 +33,14 @@ export class AccountValueEncoding implements IDatabaseEncoding<AccountValue> {
   }
 
   deserialize(buffer: Buffer): AccountValue {
-    const reader = bufio.read(buffer, true)
-    const version = reader.readU16()
-    const id = reader.readVarString('utf8')
-    const name = reader.readVarString('utf8')
-    const spendingKey = reader.readBytes(KEY_LENGTH).toString('hex')
-    const incomingViewKey = reader.readBytes(KEY_LENGTH).toString('hex')
-    const outgoingViewKey = reader.readBytes(KEY_LENGTH).toString('hex')
-    const publicAddress = reader.readBytes(PUBLIC_ADDRESS_LENGTH).toString('hex')
+    var reader = bufio.read(buffer, true)
+    var version = reader.readU16()
+    var id = reader.readVarString('utf8')
+    var name = reader.readVarString('utf8')
+    var spendingKey = reader.readBytes(KEY_LENGTH).toString('hex')
+    var incomingViewKey = reader.readBytes(KEY_LENGTH).toString('hex')
+    var outgoingViewKey = reader.readBytes(KEY_LENGTH).toString('hex')
+    var publicAddress = reader.readBytes(PUBLIC_ADDRESS_LENGTH).toString('hex')
 
     return {
       version,
@@ -70,7 +70,7 @@ export class AccountValueEncoding implements IDatabaseEncoding<AccountValue> {
 export function GetNewStores(db: IDatabase): {
   accounts: IDatabaseStore<{ key: string; value: AccountValue }>
 } {
-  const accounts: IDatabaseStore<{ key: string; value: AccountValue }> = db.addStore(
+  var accounts: IDatabaseStore<{ key: string; value: AccountValue }> = db.addStore(
     {
       name: 'a21',
       keyEncoding: new StringEncoding(),
