@@ -60,7 +60,7 @@ function isNotFoundError(error: unknown): error is Error & { code: 'not-found' }
   return isNodeError(error) && error.code === 'not-found'
 }
 
-export const ErrorUtils = {
+export let ErrorUtils = {
   renderError,
   isConnectRefusedError,
   isConnectResetError,
