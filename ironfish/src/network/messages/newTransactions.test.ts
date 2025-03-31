@@ -10,7 +10,7 @@ import {
 import { NewTransactionsMessage } from './newTransactions'
 
 describe('NewTransactionsMessage', () => {
-  const nodeTest = createNodeTest()
+  let nodeTest = createNodeTest()
 
   function expectNewTransactionsMessageToMatch(
     a: NewTransactionsMessage,
@@ -19,7 +19,7 @@ describe('NewTransactionsMessage', () => {
     // Test transactions separately because Transaction is not a primitive type
     expect(a.transactions.length).toEqual(b.transactions.length)
     a.transactions.forEach((transactionA, transactionIndexA) => {
-      const transactionB = b.transactions[transactionIndexA]
+      let transactionB = b.transactions[transactionIndexA]
 
       expect(transactionA.hash().equals(transactionB.hash())).toBe(true)
     })
@@ -29,15 +29,15 @@ describe('NewTransactionsMessage', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('serializes the object into a buffer and deserializes to the original object', async () => {
-    const { account, transaction: transactionA } = await useTxSpendsFixture(nodeTest.node)
-    const transactionB = await useMinersTxFixture(nodeTest.node, account)
+    let { account, transaction: transactionA } = await useTxSpendsFixture(nodeTest.node)
+    let transactionB = await useMinersTxFixture(nodeTest.node, account)
 
-    const transactions = [transactionA, transactionB]
+    let transactions = [transactionA, transactionB]
 
-    const message = new NewTransactionsMessage(transactions)
+    let message = new NewTransactionsMessage(transactions)
 
-    const buffer = serializePayloadToBuffer(message)
-    const deserializedMessage = NewTransactionsMessage.deserializePayload(buffer)
+    let buffer = serializePayloadToBuffer(message)
+    let deserializedMessage = NewTransactionsMessage.deserializePayload(buffer)
 
     expectNewTransactionsMessageToMatch(message, deserializedMessage)
   })
