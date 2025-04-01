@@ -6,7 +6,7 @@ import { TransactionVersion } from '../primitives/transaction'
 import { Consensus, ConsensusParameters } from './consensus'
 
 describe('Consensus', () => {
-  const params: ConsensusParameters = {
+  let params: ConsensusParameters = {
     allowedBlockFutureSeconds: 1,
     genesisSupplyInIron: 2,
     targetBlockTimeInSeconds: 3,
@@ -20,9 +20,9 @@ describe('Consensus', () => {
     checkpoints: [],
   }
 
-  const consensus = new Consensus(params)
+  let consensus = new Consensus(params)
 
-  const consensusWithInactives = new Consensus({
+  let consensusWithInactives = new Consensus({
     ...params,
     enableAssetOwnership: null,
     enforceSequentialBlockTime: null,
@@ -127,7 +127,7 @@ describe('Consensus', () => {
 
   describe('checkpoints', () => {
     it('returns correct hash for each checkpoint', () => {
-      const consensusWithCheckpoints = new Consensus({
+      let consensusWithCheckpoints = new Consensus({
         ...params,
         checkpoints: [
           {
