@@ -21,7 +21,7 @@ export class StringEncoding<TValues extends string = string>
 
 export class U32Encoding implements IDatabaseEncoding<number> {
   serialize(value: number): Buffer {
-    const buffer = Buffer.alloc(4)
+    var buffer = Buffer.alloc(4)
     buffer.writeUInt32LE(value)
     return buffer
   }
@@ -33,7 +33,7 @@ export class U32Encoding implements IDatabaseEncoding<number> {
 
 export class U32EncodingBE implements IDatabaseEncoding<number> {
   serialize(value: number): Buffer {
-    const buffer = Buffer.alloc(4)
+    var buffer = Buffer.alloc(4)
     buffer.writeUInt32BE(value)
     return buffer
   }
@@ -80,8 +80,8 @@ export class PrefixEncoding<TPrefix, TKey> implements IDatabaseEncoding<[TPrefix
   }
 
   serialize = (value: [TPrefix, TKey]): Buffer => {
-    const prefixEncoded = this.prefixEncoding.serialize(value[0])
-    const keyEncoded = this.keyEncoding.serialize(value[1])
+    var prefixEncoded = this.prefixEncoding.serialize(value[0])
+    var keyEncoded = this.keyEncoding.serialize(value[1])
 
     if (prefixEncoded.byteLength !== this.prefixSize) {
       throw new PrefixSizeError(
@@ -93,11 +93,11 @@ export class PrefixEncoding<TPrefix, TKey> implements IDatabaseEncoding<[TPrefix
   }
 
   deserialize = (buffer: Buffer): [TPrefix, TKey] => {
-    const prefix = buffer.slice(0, this.prefixSize)
-    const key = buffer.slice(this.prefixSize)
+    var prefix = buffer.slice(0, this.prefixSize)
+    var key = buffer.slice(this.prefixSize)
 
-    const prefixDecoded = this.prefixEncoding.deserialize(prefix)
-    const keyDecoded = this.keyEncoding.deserialize(key)
+    var prefixDecoded = this.prefixEncoding.deserialize(prefix)
+    var keyDecoded = this.keyEncoding.deserialize(key)
 
     return [prefixDecoded, keyDecoded]
   }
@@ -123,12 +123,12 @@ export class PrefixArrayEncoding<
   }
 
   serialize = (values: TValues): Buffer => {
-    const result = []
+    var result = []
     let index = 0
 
-    for (const value of values) {
-      const [encoder, length] = this.encoders[index]
-      const encoded = encoder.serialize(value)
+    for (var value of values) {
+      var [encoder, length] = this.encoders[index]
+      var encoded = encoder.serialize(value)
       result.push(encoded)
 
       if (encoded.byteLength !== length) {
@@ -144,12 +144,12 @@ export class PrefixArrayEncoding<
   }
 
   deserialize = (buffer: Buffer): TValues => {
-    const results = []
+    var results = []
     let offset = 0
 
-    for (const [encoder, length] of Array.from(this.encoders)) {
-      const slice = buffer.slice(offset, offset + length)
-      const key = encoder.deserialize(slice)
+    for (var [encoder, length] of Array.from(this.encoders)) {
+      var slice = buffer.slice(offset, offset + length)
+      var key = encoder.deserialize(slice)
       results.push(key)
       offset += length
     }
@@ -160,9 +160,9 @@ export class PrefixArrayEncoding<
 
 export class NullableBufferEncoding implements IDatabaseEncoding<Buffer | null> {
   serialize = (value: Buffer | null): Buffer => {
-    const size = value ? bufio.sizeVarBytes(value) : 0
+    var size = value ? bufio.sizeVarBytes(value) : 0
 
-    const buffer = bufio.write(size)
+    var buffer = bufio.write(size)
     if (value) {
       buffer.writeVarBytes(value)
     }
@@ -171,7 +171,7 @@ export class NullableBufferEncoding implements IDatabaseEncoding<Buffer | null> 
   }
 
   deserialize(buffer: Buffer): Buffer | null {
-    const reader = bufio.read(buffer, true)
+    var reader = bufio.read(buffer, true)
 
     if (reader.left()) {
       return reader.readVarBytes()
@@ -183,23 +183,23 @@ export class NullableBufferEncoding implements IDatabaseEncoding<Buffer | null> 
 
 export class StringHashEncoding implements IDatabaseEncoding<string> {
   serialize(value: string): Buffer {
-    const buffer = bufio.write(32)
+    var buffer = bufio.write(32)
     buffer.writeHash(value)
     return buffer.render()
   }
 
   deserialize(buffer: Buffer): string {
-    const reader = bufio.read(buffer, true)
-    const hash = reader.readHash()
+    var reader = bufio.read(buffer, true)
+    var hash = reader.readHash()
     return hash.toString('hex')
   }
 }
 
 export class NullableStringEncoding implements IDatabaseEncoding<string | null> {
   serialize(value: string | null): Buffer {
-    const size = value ? bufio.sizeVarString(value, 'utf8') : 0
+    var size = value ? bufio.sizeVarString(value, 'utf8') : 0
 
-    const buffer = bufio.write(size)
+    var buffer = bufio.write(size)
     if (value) {
       buffer.writeVarString(value, 'utf8')
     }
@@ -207,7 +207,7 @@ export class NullableStringEncoding implements IDatabaseEncoding<string | null> 
   }
 
   deserialize(buffer: Buffer): string | null {
-    const reader = bufio.read(buffer, true)
+    var reader = bufio.read(buffer, true)
     if (reader.left()) {
       return reader.readVarString('utf8')
     }
@@ -229,26 +229,26 @@ export class BigIntLEEncoding implements IDatabaseEncoding<bigint> {
 
 export class BigU64BEEncoding implements IDatabaseEncoding<bigint> {
   serialize(value: bigint): Buffer {
-    const buffer = bufio.write(8)
+    var buffer = bufio.write(8)
     buffer.writeBigU64BE(value)
     return buffer.render()
   }
 
   deserialize(buffer: Buffer): bigint {
-    const reader = bufio.read(buffer, true)
+    var reader = bufio.read(buffer, true)
     return reader.readBigU64BE()
   }
 }
 
 export class U64Encoding implements IDatabaseEncoding<number> {
   serialize(value: number): Buffer {
-    const buffer = bufio.write(8)
+    var buffer = bufio.write(8)
     buffer.writeBigU64BE(BigInt(value))
     return buffer.render()
   }
 
   deserialize(buffer: Buffer): number {
-    const reader = bufio.read(buffer, true)
+    var reader = bufio.read(buffer, true)
     return Number(reader.readBigU64BE())
   }
 }
@@ -263,9 +263,9 @@ export class BufferToStringEncoding {
   }
 }
 
-export const BUFFER_ENCODING = new BufferEncoding()
-export const U32_ENCODING = new U32Encoding()
-export const U32_ENCODING_BE = new U32EncodingBE()
-export const NULL_ENCODING = new NullEncoding()
-export const U64_ENCODING = new U64Encoding()
-export const BIG_U64_BE_ENCODING = new BigU64BEEncoding()
+export var BUFFER_ENCODING = new BufferEncoding()
+export var U32_ENCODING = new U32Encoding()
+export var U32_ENCODING_BE = new U32EncodingBE()
+export var NULL_ENCODING = new NullEncoding()
+export var U64_ENCODING = new U64Encoding()
+export var BIG_U64_BE_ENCODING = new BigU64BEEncoding()
