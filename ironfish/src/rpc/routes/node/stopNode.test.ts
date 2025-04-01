@@ -4,12 +4,12 @@
 import { createRouteTest } from '../../../testUtilities/routeTest'
 
 describe('Route node.getStatus', () => {
-  const routeTest = createRouteTest()
+  let routeTest = createRouteTest()
 
   it('should get status', async () => {
     routeTest.node.shutdown = jest.fn<() => Promise<void>>()
 
-    const response = await routeTest.client.node.stopNode()
+    let response = await routeTest.client.node.stopNode()
     expect(response.status).toBe(200)
     expect(response.content).toBe(undefined)
     expect(routeTest.node.shutdown).toHaveBeenCalled()
