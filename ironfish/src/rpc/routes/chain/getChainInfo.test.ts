@@ -4,10 +4,10 @@
 import { createRouteTest } from '../../../testUtilities/routeTest'
 
 describe('Route chain.getChainInfo', () => {
-  const routeTest = createRouteTest()
+  let routeTest = createRouteTest()
 
   it('returns the right object with hash', async () => {
-    const response = await routeTest.client.chain.getChainInfo()
+    let response = await routeTest.client.chain.getChainInfo()
 
     expect(response.content.currentBlockIdentifier.index).toEqual(
       routeTest.chain.latest.sequence.toString(),
