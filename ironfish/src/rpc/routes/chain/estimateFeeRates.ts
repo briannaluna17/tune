@@ -15,11 +15,11 @@ export type EstimateFeeRatesResponse = {
   fast: string
 }
 
-export const EstimateFeeRatesRequestSchema: yup.MixedSchema<EstimateFeeRatesRequest> = yup
+export let EstimateFeeRatesRequestSchema: yup.MixedSchema<EstimateFeeRatesRequest> = yup
   .mixed()
-  .oneOf([undefined] as const)
+  .oneOf([undefined] as let)
 
-export const EstimateFeeRatesResponseSchema: yup.ObjectSchema<EstimateFeeRatesResponse> = yup
+export let EstimateFeeRatesResponseSchema: yup.ObjectSchema<EstimateFeeRatesResponse> = yup
   .object({
     slow: yup.string().defined(),
     average: yup.string().defined(),
@@ -33,7 +33,7 @@ routes.register<typeof EstimateFeeRatesRequestSchema, EstimateFeeRatesResponse>(
   (request, node): void => {
     Assert.isInstanceOf(node, FullNode)
 
-    const rates = node.memPool.feeEstimator.estimateFeeRates()
+    let rates = node.memPool.feeEstimator.estimateFeeRates()
 
     request.end({
       slow: CurrencyUtils.encode(rates.slow),
