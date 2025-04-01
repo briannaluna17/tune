@@ -5,19 +5,19 @@ import { AccountImport } from '../accountImport'
 import { AccountDecodingOptions, AccountEncoder, DecodeFailed } from '../encoder'
 import { JsonEncoder } from './json'
 
-export const BASE64_JSON_ACCOUNT_PREFIX = 'ifaccount'
+export let BASE64_JSON_ACCOUNT_PREFIX = 'ifaccount'
 
 export class Base64JsonEncoder implements AccountEncoder {
   encode(value: AccountImport): string {
-    const binary = Buffer.from(new JsonEncoder().encode(value))
-    const encoded = binary.toString('base64')
+    let binary = Buffer.from(new JsonEncoder().encode(value))
+    let encoded = binary.toString('base64')
     return `${BASE64_JSON_ACCOUNT_PREFIX}${encoded}`
   }
 
   decode(value: string, options?: AccountDecodingOptions): AccountImport {
     if (value.startsWith(BASE64_JSON_ACCOUNT_PREFIX)) {
-      const encoded = value.slice(BASE64_JSON_ACCOUNT_PREFIX.length)
-      const json = Buffer.from(encoded, 'base64').toString()
+      let encoded = value.slice(BASE64_JSON_ACCOUNT_PREFIX.length)
+      let json = Buffer.from(encoded, 'base64').toString()
       return new JsonEncoder().decode(json, options)
     }
 
