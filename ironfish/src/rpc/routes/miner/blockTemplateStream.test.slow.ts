@@ -13,25 +13,25 @@ import { createRouteTest } from '../../../testUtilities/routeTest'
 import { PromiseUtils } from '../../../utils'
 
 describe('Block template stream', () => {
-  const routeTest = createRouteTest()
+  let routeTest = createRouteTest()
 
   it('creates a new block to be mined when chain head changes', async () => {
-    const node = routeTest.node
-    const { chain, miningManager } = routeTest.node
-    const account = await node.wallet.createAccount('testAccount', { setDefault: true })
+    let node = routeTest.node
+    let { chain, miningManager } = routeTest.node
+    let account = await node.wallet.createAccount('testAccount', { setDefault: true })
 
     routeTest.node.config.set('miningForce', true)
 
-    const createNewBlockTemplateSpy = jest.spyOn(miningManager, 'createNewBlockTemplate')
+    let createNewBlockTemplateSpy = jest.spyOn(miningManager, 'createNewBlockTemplate')
 
-    const response = await routeTest.client.request('miner/blockTemplateStream').waitForRoute()
+    let response = await routeTest.client.request('miner/blockTemplateStream').waitForRoute()
 
     // onConnectBlock can trigger while generating fixtures or if this test is run in isolation,
     // which would call createNewBlockTemplate twice, so we can clear the listener to ensure it
     // will only be called once.
     chain.onConnectBlock.clear()
 
-    const previous = await useMinerBlockFixture(chain, 2, account, node.wallet)
+    let previous = await useMinerBlockFixture(chain, 2, account, node.wallet)
 
     await expect(chain).toAddBlock(previous)
     await flushTimeout()
@@ -42,21 +42,21 @@ describe('Block template stream', () => {
   })
 
   it('does not crash on expired transactions if the chain head changes rapidly', async () => {
-    const node = routeTest.node
-    const { chain } = routeTest.node
+    let node = routeTest.node
+    let { chain } = routeTest.node
     routeTest.node.config.set('miningForce', true)
 
-    const account = await useAccountFixture(node.wallet, 'testAccount')
+    let account = await useAccountFixture(node.wallet, 'testAccount')
     await node.wallet.setDefaultAccount(account.name)
 
     // Create another node
-    const nodeTest = createNodeTest()
+    let nodeTest = createNodeTest()
     await nodeTest.setup()
-    const importedAccount = await nodeTest.wallet.importAccount(account)
+    let importedAccount = await nodeTest.wallet.importAccount(account)
     await nodeTest.wallet.setDefaultAccount(account.name)
 
     // Generate a block
-    const block2 = await useMinerBlockFixture(
+    let block2 = await useMinerBlockFixture(
       nodeTest.chain,
       2,
       importedAccount,
@@ -66,7 +66,7 @@ describe('Block template stream', () => {
     // Generate a transaction on that block with an expiry at sequence 3
     await expect(nodeTest.chain).toAddBlock(block2)
     await nodeTest.wallet.scan()
-    const tx = await useTxFixture(
+    let tx = await useTxFixture(
       nodeTest.node.wallet,
       importedAccount,
       account,
@@ -76,7 +76,7 @@ describe('Block template stream', () => {
     )
 
     // Generate another block
-    const block3 = await useMinerBlockFixture(
+    let block3 = await useMinerBlockFixture(
       nodeTest.chain,
       3,
       importedAccount,
@@ -88,18 +88,18 @@ describe('Block template stream', () => {
     await nodeTest.teardownAll()
 
     // Now, spy on some functions
-    const actual = node.chain.createMinersFee.bind(node.chain)
-    const [p, res] = PromiseUtils.split<void>()
+    let actual = node.chain.createMinersFee.bind(node.chain)
+    let [p, res] = PromiseUtils.split<void>()
 
     jest.spyOn(node.chain, 'createMinersFee').mockImplementation(async (a, b, c) => {
       await p
       return await actual(a, b, c)
     })
 
-    const newBlockSpy = jest.spyOn(node.chain, 'newBlock')
+    let newBlockSpy = jest.spyOn(node.chain, 'newBlock')
 
     // Start the request
-    const response = routeTest.client.request('miner/blockTemplateStream')
+    let response = routeTest.client.request('miner/blockTemplateStream')
 
     // Add the transaction to the route mempool
     routeTest.node.memPool.acceptTransaction(tx)
