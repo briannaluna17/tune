@@ -7,7 +7,7 @@ import { AssetValue, AssetValueEncoding } from './assetValue'
 export function GetOldStores(db: IDatabase): {
   assets: IDatabaseStore<{ key: Buffer; value: AssetValue }>
 } {
-  const assets: IDatabaseStore<{ key: Buffer; value: AssetValue }> = db.addStore(
+  let assets: IDatabaseStore<{ key: Buffer; value: AssetValue }> = db.addStore(
     {
       name: 'bA',
       keyEncoding: BUFFER_ENCODING,
