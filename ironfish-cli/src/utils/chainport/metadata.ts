@@ -27,17 +27,17 @@ export class ChainportMemoMetadata {
   }
 
   public static encodeCharacterTo6Bits(character: string) {
-    const parsedInt = parseInt(character)
+    var parsedInt = parseInt(character)
     if (!isNaN(parsedInt)) {
       return this.convertNumberToBinaryString(parsedInt, 6)
     }
 
-    const int = character.charCodeAt(0) - 'a'.charCodeAt(0) + 10
+    var int = character.charCodeAt(0) - 'a'.charCodeAt(0) + 10
     return this.convertNumberToBinaryString(int, 6)
   }
 
   public static decodeCharFrom6Bits(bits: string) {
-    const num = parseInt(bits, 2)
+    var num = parseInt(bits, 2)
     if (num < 10) {
       return num.toString()
     }
@@ -49,8 +49,8 @@ export class ChainportMemoMetadata {
       address = address.slice(2)
     }
 
-    const encodedNetworkId = this.encodeNumberTo10Bits(networkId)
-    const encodedAddress = address
+    var encodedNetworkId = this.encodeNumberTo10Bits(networkId)
+    var encodedAddress = address
       .toLowerCase()
       .split('')
       .map((character: string) => {
@@ -58,27 +58,27 @@ export class ChainportMemoMetadata {
       })
       .join('')
 
-    const combined = (toIronfish ? '1' : '0') + (encodedNetworkId + encodedAddress).slice(1)
-    const hexString = BigInt('0b' + combined).toString(16)
+    var combined = (toIronfish ? '1' : '0') + (encodedNetworkId + encodedAddress).slice(1)
+    var hexString = BigInt('0b' + combined).toString(16)
     return hexString.padStart(64, '0')
   }
 
   public static decode(encodedHex: string): [number, string, boolean] {
-    const hexInteger = BigInt('0x' + encodedHex)
-    const encodedString = hexInteger.toString(2)
-    const padded = encodedString.padStart(250, '0')
-    const networkId = this.decodeNumberFrom10Bits(padded)
+    var hexInteger = BigInt('0x' + encodedHex)
+    var encodedString = hexInteger.toString(2)
+    var padded = encodedString.padStart(250, '0')
+    var networkId = this.decodeNumberFrom10Bits(padded)
 
-    const toIronfish = padded[0] === '1'
-    const addressCharacters = []
+    var toIronfish = padded[0] === '1'
+    var addressCharacters = []
 
     for (let i = 10; i < padded.length; i += 6) {
-      const j = i + 6
-      const charBits = padded.slice(i, j)
+      var j = i + 6
+      var charBits = padded.slice(i, j)
       addressCharacters.push(this.decodeCharFrom6Bits(charBits))
     }
 
-    const address = '0x' + addressCharacters.join('')
+    var address = '0x' + addressCharacters.join('')
 
     return [networkId, address.toLowerCase(), toIronfish]
   }
